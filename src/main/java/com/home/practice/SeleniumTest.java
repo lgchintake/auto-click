@@ -20,6 +20,8 @@ public class SeleniumTest implements CommandLineRunner {
         System.setProperty("java.awt.headless", "false");
     }
 
+    String[] websites = {"https://example.com", "https://www.google.com", "https://stackoverflow.com", "https://www.tutorialspoint.com", "https://www.w3schools.com/", "https://github.com"};
+
     @Override
     public void run(String... args) throws Exception {
         WebDriverManager.chromedriver().setup();
@@ -31,22 +33,23 @@ public class SeleniumTest implements CommandLineRunner {
         int screenWidth = screenSize.width;
         int screenHeight = screenSize.height;
         int previous = 0;
-        for (int i = 0; i < 100; i++) {
+        int webSiteMaxCount = websites.length - 1;
+        do {
             int randomWaiter;
             do {
-                randomWaiter = generateRandom(10);
+                randomWaiter = generateRandom(10, 1);
             } while (previous == randomWaiter);
             previous = randomWaiter;
 
             try {
                 // Open a website
-                driver.get("https://example.com");
+                driver.get(websites[generateRandom(webSiteMaxCount, 0)]);
 
                 // Create an instance of Actions class
                 Actions actions = new Actions(driver);
 
                 // Locate the element to move to
-                WebElement targetElement = driver.findElement(By.linkText("More information..."));
+                WebElement targetElement = driver.findElement(By.tagName("div"));
 
                 // Perform mouse move to the target element
                 actions.moveToElement(targetElement).perform();
@@ -64,21 +67,19 @@ public class SeleniumTest implements CommandLineRunner {
                 robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
                 robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
 
-                System.out.println("Waiter: "+randomWaiter+" ---- Mouse moved to (" + position[0] + ", " + position[1] + ") and clicked. ");
+                System.out.println("Waiter: " + randomWaiter + " ---- Mouse moved to (" + position[0] + ", " + position[1] + ") and clicked. ");
                 Thread.sleep(randomWaiter * 1000L); // 2 seconds
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
-
-        driver.quit();
+        } while (true);
     }
 
-    private int generateRandom(int max) {
-        return new Random().nextInt(max - 1 + 1) + 1;
+    private int generateRandom(int max, int min) {
+        return new Random().nextInt(max - min + 1) + min;
     }
 
     private int[] getMouseNewPosition(int screenWidth, int screenHeight) {
-        return new int[]{generateRandom(screenWidth) - 300, generateRandom(screenHeight) - 300};
+        return new int[]{generateRandom(screenWidth, 300), generateRandom(screenHeight, 300)};
     }
 }
