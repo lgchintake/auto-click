@@ -1,4 +1,4 @@
-# selenium-project
+# auto-click
 
 This project will help you to keep your screen awake always.
 
