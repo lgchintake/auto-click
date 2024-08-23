@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.home.practice</groupId>
-    <artifactId>selenium-project</artifactId>
+    <artifactId>auto-click</artifactId>
     <version>1.0.0</version>
-    <name>selenium-project</name>
+    <name>auto-click</name>
     <description>Auto click and screen wakeup</description>
     <url/>
     <licenses>
