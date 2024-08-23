@@ -11,7 +11,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
+import java.io.IOException;
+import java.util.List;
 import java.awt.event.InputEvent;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Random;
 
 @Component
@@ -24,6 +29,7 @@ public class SeleniumTest implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        readWebsites();
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         WebDriver driver = new ChromeDriver(options);
@@ -49,7 +55,7 @@ public class SeleniumTest implements CommandLineRunner {
                 Actions actions = new Actions(driver);
 
                 // Locate the element to move to
-                WebElement targetElement = driver.findElement(By.tagName("div"));
+                WebElement targetElement = driver.findElement(By.tagName("body"));
 
                 // Perform mouse move to the target element
                 actions.moveToElement(targetElement).perform();
@@ -81,5 +87,31 @@ public class SeleniumTest implements CommandLineRunner {
 
     private int[] getMouseNewPosition(int screenWidth, int screenHeight) {
         return new int[]{generateRandom(screenWidth, 300), generateRandom(screenHeight, 300)};
+    }
+
+    private void readWebsites(){
+        // Get the current directory path
+        String currentDirectory = System.getProperty("user.dir");
+
+        // Define the file name
+        String fileName = "websites.txt";
+
+        // Create a Path object for the file
+        Path filePath = Paths.get(currentDirectory, fileName);
+
+        // Check if the file exists
+        if (Files.exists(filePath)) {
+            try {
+                // Read all lines from the file
+                List<String> lines = Files.readAllLines(filePath);
+
+                // Convert the list of strings to an array
+                websites = lines.toArray(new String[0]);
+            } catch (IOException e) {
+                System.err.println("Error reading the file: " + e.getMessage());
+            }
+        } else {
+            System.out.println("File " + fileName + " does not exist in the current directory.");
+        }
     }
 }
