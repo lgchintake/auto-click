@@ -1,9 +1,8 @@
 package com.home.practice;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
@@ -12,11 +11,10 @@ import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.List;
-import java.awt.event.InputEvent;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Random;
 
 @Component
@@ -34,12 +32,15 @@ public class SeleniumTest implements CommandLineRunner {
         ChromeOptions options = new ChromeOptions();
         WebDriver driver = new ChromeDriver(options);
         driver.manage().window().maximize();
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        int screenWidth = screenSize.width;
-        int screenHeight = screenSize.height;
+        Dimension browserDimension = driver.manage().window().getSize();
+
+        int browserHeight = browserDimension.getHeight();
+        int browserWidth = browserDimension.getWidth();
+
         int previous = 0;
         int webSiteMaxCount = websites.length - 1;
+        Random random = new Random();
         do {
             int randomWaiter;
             do {
@@ -65,15 +66,21 @@ public class SeleniumTest implements CommandLineRunner {
 
                 Robot robot = new Robot();
 
-                int[] position = getMouseNewPosition(screenWidth, screenHeight);
+                int randomX = random.nextInt(browserWidth);
+                int randomY = random.nextInt(browserHeight);
+
+                JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+                String script = String.format("document.elementFromPoint(%d, %d).click();", randomX, randomY);
+                jsExecutor.executeScript(script);
+
                 // Move the mouse cursor
-                robot.mouseMove(position[0], position[1]);
+                robot.mouseMove(randomX, randomY);
 
                 // Optionally, perform a click at the new location
-                robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-                robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+//                robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+//                robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
 
-                System.out.println("Waiter: " + randomWaiter + " ---- Mouse moved to (" + position[0] + ", " + position[1] + ") and clicked. ");
+                System.out.println("Waiter: " + randomWaiter + " ---- Mouse moved to (" + randomX + ", " + randomY + ") and clicked. ");
                 Thread.sleep(randomWaiter * 1000L); // 2 seconds
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -85,11 +92,7 @@ public class SeleniumTest implements CommandLineRunner {
         return new Random().nextInt(max - min + 1) + min;
     }
 
-    private int[] getMouseNewPosition(int screenWidth, int screenHeight) {
-        return new int[]{generateRandom(screenWidth, 300), generateRandom(screenHeight, 300)};
-    }
-
-    private void readWebsites(){
+    private void readWebsites() {
         // Get the current directory path
         String currentDirectory = System.getProperty("user.dir");
 
