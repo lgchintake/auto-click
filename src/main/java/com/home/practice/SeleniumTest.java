@@ -69,9 +69,13 @@ public class SeleniumTest implements CommandLineRunner {
                 int randomX = random.nextInt(browserWidth);
                 int randomY = random.nextInt(browserHeight);
 
-                JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-                String script = String.format("document.elementFromPoint(%d, %d).click();", randomX, randomY);
-                jsExecutor.executeScript(script);
+                try {
+                    JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+                    String script = String.format("document.elementFromPoint(%d, %d).click();", randomX, randomY);
+                    jsExecutor.executeScript(script);
+                } catch (Exception e){
+                    System.out.println("Error clicking...");
+                }
 
                 // Move the mouse cursor
                 robot.mouseMove(randomX, randomY);
